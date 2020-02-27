@@ -1,0 +1,18 @@
+[Unit]
+Description=Plex Media Server Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/brian/projects/media_server
+ExecStartPre=/bin/mkdir -p /media/brian/TV
+ExecStartPre=/bin/mount --uuid B84A872F4A86E988 /media/brian/TV
+ExecStart=/usr/local/bin/docker-compose start
+ExecStop=/usr/local/bin/docker-compose stop
+ExecStopPost=/bin/umount /media/brian/TV
+
+[Install]
+WantedBy=multi-user.target
+

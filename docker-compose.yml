@@ -1,0 +1,101 @@
+version: '2'
+services:
+  plex:
+    image: linuxserver/plex
+    container_name: plex
+    network_mode: host
+    environment:
+      - VERSION=docker
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/projects/media_server/plex:/config
+      - /media/brian/TV/tv:/data/tvshows
+      - /media/brian/TV/movies:/data/movies
+    restart: unless-stopped
+  sonarr:
+    image: linuxserver/sonarr:preview
+    container_name: sonarr
+    environment:
+      - TZ=America/Toronto
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/projects/media_server/sonarrv3:/config
+      - /media/brian/TV/tv:/tv
+      - /media/brian/TV/torrent_downloads:/downloads
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    environment:
+      - TZ=America/Toronto
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/projects/media_server/radarr:/config
+      - /media/brian/TV/movies:/movies
+      - /media/brian/TV/torrent_downloads:/downloads
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  jackett:
+    image: linuxserver/jackett
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+    volumes:
+      - ~/projects/media_server/jackett:/config
+      - /media/brian/TV/torrent_files:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+  transmission:
+    image: linuxserver/transmission
+    container_name: transmission
+    environment:
+      - TZ=America/Toronto
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/projects/media_server/transmission:/config
+      - /media/brian/TV/torrent_downloads:/downloads
+      - /media/brian/TV/torrent_files:/watch
+      - /media/brian/TV/tv:/tv
+      - /media/brian/TV/movies:/movies
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+  ombi:
+    image: linuxserver/ombi
+    container_name: ombi
+    environment:
+      - TZ=America/Toronto
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ~/projects/media_server/ombi:/config
+      - /media/brian/TV/tv:/tv
+      - /media/brian/TV/movies:/movies
+    ports:
+      - 3579:3579
+    restart: unless-stopped
+  tautulli:
+    image: linuxserver/tautulli
+    container_name: tautulli
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Toronto
+    volumes:
+      - ~/projects/media_server/tautalli:/config
+      - ~/projects/media_server/plex/Library/Application Support/Plex Media Server/Logs:/logs
+    ports:
+      - 8181:8181
+    restart: unless-stopped
