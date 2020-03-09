@@ -1,0 +1,9 @@
+__pycache__/
+jackett/
+ombi/
+plex/
+radarr/
+sonarr/
+sonarrv3/
+tautalli/
+transmission/
