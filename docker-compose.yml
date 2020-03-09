@@ -21,7 +21,7 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - ~/projects/media_server/sonarrv3:/config
+      - ~/projects/media_server/sonarr:/config
       - /media/brian/TV/tv:/tv
       - /media/brian/TV/torrent_downloads:/downloads
     ports:
