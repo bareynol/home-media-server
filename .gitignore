@@ -7,3 +7,5 @@ sonarr/
 sonarrv3/
 tautalli/
 transmission/
+
+server_api/node_modules/
