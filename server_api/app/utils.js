@@ -1,6 +1,24 @@
 const si = require('systeminformation');
 const exec = require('child_process').exec;
 
+async function getAllData() {
+  const [cpu, disk, mem, uptime] = await Promise.all(
+    [
+      getCpuData(),
+      getDiskData(),
+      getMemData(),
+      getUptime()
+    ]
+  );
+
+  return {
+    cpu,
+    disk,
+    mem,
+    uptime
+  }
+}
+
 /**
  * 
  * CPU FUNCTIONS
@@ -149,6 +167,7 @@ function roundToTwoDecimals(num) {
 }
 
 module.exports = {
+  getAllData,
   getCpuData,
   getCpuTemperature,
   getDiskData,
