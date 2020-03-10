@@ -1,5 +1,6 @@
 const si = require('systeminformation');
 const exec = require('child_process').exec;
+const {prettySize, roundToTwoDecimals} = require('./formatters.js');
 
 async function getAllData() {
   const [cpu, disk, mem, uptime] = await Promise.all(
@@ -145,27 +146,6 @@ async function getDiskStorage() {
  }
 
 
-
-/**
- * 
- * HELPER FUNCTIONS
- * 
- */
-
-function prettySize(bytes, separator = '', postFix = '') {
-  if (bytes) {
-      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-      const i = Math.min(parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10), sizes.length - 1);
-      return `${(bytes / (1024 ** i)).toFixed(i ? 1 : 0)}${separator}${sizes[i]}${postFix}`;
-  }
-  return 'n/a';
-}
-
-function roundToTwoDecimals(num) {
-  // Number.EPSILON to ensure things like 1.005 round correctly
-  return Math.round((num + Number.EPSILON) * 100) / 100;
-}
-
 module.exports = {
   getAllData,
   getCpuData,
@@ -174,5 +154,4 @@ module.exports = {
   getDiskStorage,
   getMemData,
   getUptime,
-  prettySize
 };
