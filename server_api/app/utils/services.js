@@ -10,6 +10,14 @@ const DOCKER_CONTAINERS = [
   'ombi',
 ]
 
+async function getAllServicesData() {
+  const [docker] = await Promise.all([getDockerContainerData()]);
+
+  return {
+    docker
+  }
+}
+
 async function getDockerContainerData() {
   const dockerContainers = await si.dockerContainers(true);
 
@@ -47,5 +55,6 @@ function isValidContainer(name) {
 }
 
 module.exports = {
+  getAllServicesData,
   getDockerContainerData,
 }

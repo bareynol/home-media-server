@@ -2,7 +2,7 @@ const si = require('systeminformation');
 const exec = require('child_process').exec;
 const {prettySize, roundToTwoDecimals} = require('./formatters.js');
 
-async function getAllData() {
+async function getAllHardwareData() {
   const [cpu, disk, mem, uptime] = await Promise.all(
     [
       getCpuData(),
@@ -147,7 +147,7 @@ async function getDiskStorage() {
 
 
 module.exports = {
-  getAllData,
+  getAllHardwareData,
   getCpuData,
   getCpuTemperature,
   getDiskData,
