@@ -102,6 +102,38 @@ async function getDiskStorage() {
   return disks;
 }
 
+/**
+ * 
+ * MISC DATA FUNCTIONS
+ * 
+ */
+
+ async function getMemData() {
+   const mem = await si.mem();
+   return {
+     total: prettySize(mem.total),
+     active: prettySize(mem.active),
+     available: prettySize(mem.available),
+     percentUsed: roundToTwoDecimals(100 * (mem.active / mem.total)),
+   }
+ }
+
+ async function getUptime() {
+   /**
+    * returns server uptime in seconds
+    */
+   const siTime = await si.time();
+   return siTime.uptime
+ }
+
+
+
+/**
+ * 
+ * HELPER FUNCTIONS
+ * 
+ */
+
 function prettySize(bytes, separator = '', postFix = '') {
   if (bytes) {
       const sizes = ['Bytes', 'KB', 'MB', 'GB'];
@@ -111,10 +143,17 @@ function prettySize(bytes, separator = '', postFix = '') {
   return 'n/a';
 }
 
+function roundToTwoDecimals(num) {
+  // Number.EPSILON to ensure things like 1.005 round correctly
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
 module.exports = {
   getCpuData,
   getCpuTemperature,
   getDiskData,
   getDiskStorage,
+  getMemData,
+  getUptime,
   prettySize
 };
