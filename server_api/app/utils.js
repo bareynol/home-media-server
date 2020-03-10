@@ -1,6 +1,12 @@
 const si = require('systeminformation');
 const exec = require('child_process').exec;
 
+/**
+ * 
+ * CPU FUNCTIONS
+ * 
+ **/
+
 async function getCpuData() {
   const [temperature] = await Promise.all([getCpuTemperature()]);
 
@@ -8,7 +14,6 @@ async function getCpuData() {
     temperature
   }
 }
-
 
 async function getCpuTemperature() {
   /**
@@ -47,7 +52,59 @@ async function getCpuTemperature() {
   })
 }
 
+
+/**
+ * 
+ * DISKS FUNCTIONS
+ * 
+ **/
+
+// constant definition for mapping the drives
+const DRIVE_MAP = [
+  ["SSD", "/dev/sdb2"],
+  ["TV", "/dev/sda1"],
+]
+
+function getDriveLabel(diskName) {
+  /**
+   * Return the label from the drive map if the
+   * diskName given matches. Else return False
+   */
+  for(var i = 0; i < DRIVE_MAP.length; i++) {
+    if (diskName === DRIVE_MAP[i][1]) {
+      return DRIVE_MAP[i][0]
+    }
+  }
+  return false
+}
+
+async function getDiskData() {
+  const [storage] = await Promise.all([getDiskStorage()]);
+
+  return storage;
+}
+
+async function getDiskStorage() {
+  const fsSize = await si.fsSize();
+  const disks = [];
+  fsSize.forEach(disk => {
+    const driveLabel = getDriveLabel(disk.fs);
+    if (driveLabel) {
+      disks.push({
+        label: driveLabel,
+        size: disk.size,
+        used: disk.used,
+        percentUsed: disk.use,
+      })
+    }
+  })
+
+  return disks;
+}
+
 module.exports = {
   getCpuData,
   getCpuTemperature,
+  getDiskData,
+  getDiskStorage,
 };
