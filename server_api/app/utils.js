@@ -92,8 +92,8 @@ async function getDiskStorage() {
     if (driveLabel) {
       disks.push({
         label: driveLabel,
-        size: disk.size,
-        used: disk.used,
+        size: prettySize(disk.size),
+        used: prettySize(disk.used),
         percentUsed: disk.use,
       })
     }
@@ -102,9 +102,19 @@ async function getDiskStorage() {
   return disks;
 }
 
+function prettySize(bytes, separator = '', postFix = '') {
+  if (bytes) {
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.min(parseInt(Math.floor(Math.log(bytes) / Math.log(1024)), 10), sizes.length - 1);
+      return `${(bytes / (1024 ** i)).toFixed(i ? 1 : 0)}${separator}${sizes[i]}${postFix}`;
+  }
+  return 'n/a';
+}
+
 module.exports = {
   getCpuData,
   getCpuTemperature,
   getDiskData,
   getDiskStorage,
+  prettySize
 };
