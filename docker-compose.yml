@@ -28,8 +28,7 @@ services:
       - PGID=1000
     volumes:
       - ~/media_server/sonarr:/config
-      - /media/briantv/TV/tv:/tv
-      - /media/briantv/TV/torrent_downloads:/downloads
+      - /media/briantv/TV:/data
     ports:
       - 8989:8989
     restart: unless-stopped
@@ -42,8 +41,7 @@ services:
       - PGID=1000
     volumes:
       - ~/media_server/radarr:/config
-      - /media/briantv/TV/movies:/movies
-      - /media/briantv/TV/torrent_downloads:/downloads
+      - /media/briantv/TV:/data
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -69,10 +67,7 @@ services:
       - PGID=1000
     volumes:
       - ~/media_server/transmission:/config
-      - /media/briantv/TV/torrent_downloads:/downloads
-      - /media/briantv/TV/torrent_files:/watch
-      - /media/briantv/TV/tv:/tv
-      - /media/briantv/TV/movies:/movies
+      - /media/briantv/TV:/data
     ports:
       - 9091:9091
       - 51413:51413
