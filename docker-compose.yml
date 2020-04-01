@@ -82,8 +82,7 @@ services:
       - PGID=1000
     volumes:
       - ~/media_server/ombi:/config
-      - /media/briantv/TV/tv:/tv
-      - /media/briantv/TV/movies:/movies
+      - /media/briantv/TV:/data
     ports:
       - 3579:3579
     restart: unless-stopped
