@@ -1,13 +1,7 @@
 version: '2'
 services:
-  server_api_dev:
-    build: ./server_api
-    container_name: server_api_dev
-    network_mode: host
-    volumes:
-      - ./server_api:/home/app
   plex:
-    image: linuxserver/plex
+    image: linuxserver/plex:latest
     container_name: plex
     network_mode: host
     environment:
@@ -17,7 +11,8 @@ services:
     volumes:
       - ~/media_server/plex:/config
       - /media/briantv/TV/tv:/data/tvshows
-      - /media/briantv/TV/movies:/data/movies
+      - /media/briantv/Movies/movies:/data/movies
+      - /media/briantv/Movies/Photos:/data/photos
     restart: unless-stopped
   sonarr:
     image: linuxserver/sonarr:preview
@@ -41,7 +36,8 @@ services:
       - PGID=1000
     volumes:
       - ~/media_server/radarr:/config
-      - /media/briantv/TV:/data
+      - /media/briantv/Movies/movies:/movies
+      - /media/briantv/TV/downloads:/data/downloads
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -82,7 +78,6 @@ services:
       - PGID=1000
     volumes:
       - ~/media_server/ombi:/config
-      - /media/briantv/TV:/data
     ports:
       - 3579:3579
     restart: unless-stopped

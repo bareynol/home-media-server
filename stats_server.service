@@ -1,0 +1,15 @@
+[Unit]
+Description=Stats Server Service
+Requires=media_server.service
+After=media_server.service
+
+[Service]
+Type=simple
+Environment=NODE_VERSION=12.16.1
+WorkingDirectory=/home/briantv/media_server/server_api
+ExecStartPre=/home/briantv/.nvm/nvm-exec yarn install
+ExecStart=/home/briantv/.nvm/nvm-exec yarn run dev
+
+[Install]
+WantedBy=multi-user.target
+
