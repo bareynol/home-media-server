@@ -1,9 +1,10 @@
 const si = require('systeminformation');
 const exec = require('child_process').exec;
 const {prettySize, roundToTwoDecimals} = require('./formatters.js');
+const fetch = require('node-fetch');
 
 async function getAllHardwareData() {
-  const [cpu, disk, mem, uptime] = await Promise.all(
+  const [cpu, disks, mem, uptime] = await Promise.all(
     [
       getCpuData(),
       getDiskData(),
@@ -14,7 +15,7 @@ async function getAllHardwareData() {
 
   return {
     cpu,
-    disk,
+    disks,
     mem,
     uptime
   }
@@ -79,46 +80,82 @@ async function getCpuTemperature() {
  **/
 
 // constant definition for mapping the drives
-const DRIVE_MAP = [
-  ["SSD", "/dev/sdb2"],
-  ["TV", "/dev/sda1"],
-]
-
-function getDriveLabel(diskName) {
-  /**
-   * Return the label from the drive map if the
-   * diskName given matches. Else return False
-   */
-  for(var i = 0; i < DRIVE_MAP.length; i++) {
-    if (diskName === DRIVE_MAP[i][1]) {
-      return DRIVE_MAP[i][0]
-    }
-  }
-  return false
+const DISK_LABELS = {
+  "/dev/sdb2": "SSD",
+  "/dev/sdc": "TV",
+  "/dev/sda1": "Movies",
 }
 
 async function getDiskData() {
-  const [storage] = await Promise.all([getDiskStorage()]);
+  const [disks, tvSeries, movies] = await Promise.all([getDisks(), getTVSeries(), getMovies()]);
+  console.log(movies)
 
-  return storage;
+  for (let i=0; i < disks.length; i++) {
+    if (disks[i] && disks[i].label == "TV") {
+      disks[i].data = tvSeries;
+    }
+    if (disks[i] && disks[i].label == "Movies") {
+      disks[i].data = movies;
+    }
+  }
+
+
+  return disks;
 }
 
-async function getDiskStorage() {
+async function getDisks() {
   const fsSize = await si.fsSize();
   const disks = [];
   fsSize.forEach(disk => {
-    const driveLabel = getDriveLabel(disk.fs);
-    if (driveLabel) {
+    console.log(disk)
+    const diskLabel = DISK_LABELS[disk.fs];
+    if (diskLabel) { // exclude disks not in DRIVE_MAP
       disks.push({
-        label: driveLabel,
-        size: prettySize(disk.size),
-        used: prettySize(disk.used),
+        label: diskLabel,
+        size: disk.size,
+        used: disk.used,
         percentUsed: disk.use,
       })
     }
   })
 
   return disks;
+}
+
+async function getTVSeries() {
+  /**
+   * use sonarr API to get the disk space
+   * usage for each TV series
+   * 
+   * return list of series sorted by descending disk usage
+   */
+  const sonarrUrl = "http://192.168.0.22:8989";
+  const apiKey = process.env.SONARR_API_KEY;
+
+  const series_data = await fetch(`${sonarrUrl}/api/series?apikey=${apiKey}`).then(response => response.json());
+  
+  if (!series_data) return []
+
+  // this should be lodash lol
+  return series_data.sort((a,b) => a.sizeOnDisk > b.sizeOnDisk ? -1 : a.sizeOnDisk < b.sizeOnDisk ? 1 : 0)
+}
+
+async function getMovies() {
+  /**
+   * use sonarr API to get the disk space
+   * usage for each TV series
+   * 
+   * return list of series sorted by descending disk usage
+   */
+  const radarrUrl = "http://192.168.0.22:7878";
+  const apiKey = process.env.RADARR_API_KEY;
+
+  const movies = await fetch(`${radarrUrl}/api/movie?apikey=${apiKey}`).then(response => response.json());
+  
+  if (!movies) return []
+
+  // this should be lodash lol
+  return movies.sort((a,b) => a.sizeOnDisk > b.sizeOnDisk ? -1 : a.sizeOnDisk < b.sizeOnDisk ? 1 : 0)
 }
 
 /**
@@ -130,9 +167,9 @@ async function getDiskStorage() {
  async function getMemData() {
    const mem = await si.mem();
    return {
-     total: prettySize(mem.total),
-     active: prettySize(mem.active),
-     available: prettySize(mem.available),
+     total: mem.total,
+     active: mem.active,
+     available: mem.available,
      percentUsed: roundToTwoDecimals(100 * (mem.active / mem.total)),
    }
  }
@@ -151,7 +188,7 @@ module.exports = {
   getCpuData,
   getCpuTemperature,
   getDiskData,
-  getDiskStorage,
+  getDisks,
   getMemData,
   getUptime,
 };
