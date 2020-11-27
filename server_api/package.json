@@ -6,7 +6,7 @@
   "dependencies": {
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "systeminformation": "^4.23.0"
+    "systeminformation": "^4.30.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.3"
